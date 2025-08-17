@@ -1,0 +1,49 @@
+# Dependencies
+/vendor/
+node_modules/
+
+# Laravel
+.env
+.env.backup
+.env.production
+storage/*.key
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test coverage
+coverage/
+.phpunit.result.cache
+.pest/
+
+# Composer
+composer.lock
+
+# Log files
+*.log
+storage/logs/*.log
+
+# Cache
+bootstrap/cache/
+storage/framework/cache/
+storage/framework/sessions/
+storage/framework/views/
+
+# Build artifacts
+/build/
+/dist/
+
+# Temporary files
+*.tmp
+*.temp
+
+# Package specific
+/.github

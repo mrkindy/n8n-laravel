@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Illuminate\Support\Facades\Queue;
 use MrKindy\N8NLaravel\Services\Strategies\SyncExecutionStrategy;
 use MrKindy\N8NLaravel\Services\Strategies\AsyncExecutionStrategy;
 use MrKindy\N8NLaravel\Services\Strategies\QueuedExecutionStrategy;
@@ -18,6 +19,8 @@ it('sync strategy executes immediately', function () {
 });
 
 it('queued strategy returns queued message', function () {
+    Queue::fake();
+    
     $strategy = new QueuedExecutionStrategy();
     
     $result = $strategy->execute(function () {
@@ -27,6 +30,8 @@ it('queued strategy returns queued message', function () {
     expect($result)->toHaveKey('queued', true)
         ->and($result)->toHaveKey('message')
         ->and($strategy->getName())->toBe('queued');
+        
+    Queue::assertPushed(\MrKindy\N8NLaravel\Services\Strategies\QueuedOperation::class);
 });
 
 it('async strategy can be instantiated', function () {

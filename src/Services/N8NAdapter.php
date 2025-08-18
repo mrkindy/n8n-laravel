@@ -49,11 +49,12 @@ class N8NAdapter implements AdapterInterface
         $factory = $httpFactory ?? new HttpFactory();
         
         $this->httpClient = $factory
+            ->acceptJson()
             ->withHeaders([
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json',
+                'X-N8N-API-KEY' => $this->apiKey,
             ])
-            ->withToken($this->apiKey)
             ->timeout($this->httpConfig['timeout'] ?? 30)
             ->retry(
                 $this->httpConfig['retry']['times'] ?? 3,
@@ -201,6 +202,38 @@ class N8NAdapter implements AdapterInterface
             }
 
             return $responseData;
+        } catch (\Illuminate\Http\Client\RequestException $e) {
+            $response = $e->response;
+            $responseBody = $response->json() ?? [];
+            
+            $apiException = new N8NApiException(
+                $responseBody['message'] ?? 'API request failed',
+                $response->status(),
+                $responseBody
+            );
+
+            $errorData = [
+                'method' => $method,
+                'url' => $url,
+                'headers' => $requestData['headers'],
+                'payload' => $data,
+                'exception' => $apiException,
+            ];
+
+            $this->notifyObservers('onRequestFailed', $errorData);
+
+            if ($this->eventsEnabled) {
+                Event::dispatch(new N8NRequestFailed(
+                    $method,
+                    $url,
+                    $requestData['headers'],
+                    $data,
+                    $apiException,
+                    $timestamp
+                ));
+            }
+
+            throw $apiException;
         } catch (\Throwable $e) {
             $errorData = [
                 'method' => $method,

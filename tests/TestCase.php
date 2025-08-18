@@ -26,7 +26,7 @@ abstract class TestCase extends BaseTestCase
     protected function defineEnvironment($app): void
     {
         $app['config']->set('n8n.base_url', 'http://localhost:5678');
-        $app['config']->set('n8n.api_key', 'test-api-key');
+        $app['config']->set('n8n.api_key', 'your-api-key-here');
         $app['config']->set('n8n.events.enabled', false);
         $app['config']->set('n8n.logging.enabled', false);
     }

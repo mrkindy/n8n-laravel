@@ -24,7 +24,8 @@ class N8NServiceProvider extends ServiceProvider
                 baseUrl: config('n8n.base_url'),
                 apiKey: config('n8n.api_key'),
                 httpConfig: config('n8n.http', []),
-                eventsEnabled: config('n8n.events.enabled', true)
+                eventsEnabled: config('n8n.events.enabled', true),
+                httpFactory: $app->make(\Illuminate\Http\Client\Factory::class)
             );
         });
 

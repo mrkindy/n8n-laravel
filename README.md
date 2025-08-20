@@ -5,17 +5,15 @@ A comprehensive Laravel package for integrating with the n8n API using clean arc
 ![Alpha](https://img.shields.io/badge/status-alpha-red?style=for-the-badge)
 
 > ⚠️ **Warning**:  
-> This package is currently in **Alpha stage**.  
-> It is **not stable** and **not ready for production use** at the moment.  
-> Expect breaking changes and incomplete features.
+> This package is currently in **beta stage**.
 
 ## Features
 
-- **Facade Pattern** - Simple static interface (`N8N::workflows()`)
-- **Adapter Pattern** - Clean abstraction of n8n API communication
-- **Strategy Pattern** - Multiple execution strategies (sync, async, queued)
-- **Builder Pattern** - Fluent API for constructing complex payloads
-- **Observer Pattern** - Event hooks for request lifecycle
+- **Facade** - Simple static interface (`N8N::workflows()`)
+- **Adapter** - Clean abstraction of n8n API communication
+- **Strategy** - Multiple execution strategies (sync, async, queued)
+- **Builder** - Fluent API for constructing complex payloads
+- **Observer** - Event hooks for request lifecycle
 - **Clean Architecture** - SOLID principles and separation of concerns
 - **Type Safety** - Full PHP 8.1+ type hints and strict typing
 - **Event System** - Laravel events for request monitoring
@@ -55,252 +53,7 @@ N8N_QUEUE_NAME=n8n
 
 ## Usage
 
-### Facade Interface
-
-The package provides a simple facade interface for all n8n operations:
-
-```php
-use MrKindy\N8NLaravel\Facades\N8N;
-
-// Workflows
-$workflows = N8N::workflows()->list();
-$workflow = N8N::workflows()->get('workflow-id');
-$created = N8N::workflows()->create($workflowData);
-N8N::workflows()->activate('workflow-id');
-N8N::workflows()->deactivate('workflow-id');
-
-// Credentials
-$credential = N8N::credentials()->create($credentialData);
-$schema = N8N::credentials()->getSchema('httpBasicAuth');
-
-// Executions
-$executions = N8N::executions()->list(['status' => 'success']);
-$execution = N8N::executions()->get('execution-id');
-
-// Users (Enterprise features)
-$users = N8N::users()->list();
-$user = N8N::users()->create($userData);
-
-// Tags
-$tags = N8N::tags()->list();
-$tag = N8N::tags()->create(['name' => 'production']);
-
-// Variables
-$variables = N8N::variables()->list();
-$variable = N8N::variables()->create(['key' => 'API_URL', 'value' => 'https://api.example.com']);
-
-// Projects (Enterprise features)
-$projects = N8N::projects()->list();
-
-// Audit
-$audit = N8N::audit()->generate();
-
-// Source Control
-$result = N8N::sourceControl()->pull();
-```
-
-### Builder Pattern
-
-Use builders to construct complex request payloads:
-
-```php
-use MrKindy\N8NLaravel\Services\Builders\WorkflowPayloadBuilder;
-use MrKindy\N8NLaravel\Services\Builders\CredentialPayloadBuilder;
-use MrKindy\N8NLaravel\Services\Builders\QueryParamsBuilder;
-
-// Workflow creation with builder
-$workflow = WorkflowPayloadBuilder::make()
-    ->name('My API Workflow')
-    ->active(true)
-    ->nodes([
-        [
-            'id' => 'start-node',
-            'type' => 'n8n-nodes-base.start',
-            'position' => [240, 300]
-        ],
-        [
-            'id' => 'http-node',
-            'type' => 'n8n-nodes-base.httpRequest',
-            'position' => [460, 300],
-            'parameters' => [
-                'url' => 'https://api.example.com/data',
-                'method' => 'GET'
-            ]
-        ]
-    ])
-    ->connections([
-        'start-node' => [['http-node']]
-    ])
-    ->settings([
-        'saveManualExecutions' => true,
-        'callerPolicy' => 'workflowsFromSameOwner'
-    ])
-    ->tags(['production', 'api'])
-    ->withParam('description', 'Fetches data from external API')
-    ->build();
-
-$created = N8N::workflows()->create($workflow);
-
-// Credential creation with builder
-$credential = CredentialPayloadBuilder::make()
-    ->name('API Credentials')
-    ->type('httpBasicAuth')
-    ->data([
-        'username' => 'api_user',
-        'password' => 'secure_password'
-    ])
-    ->build();
-
-$created = N8N::credentials()->create($credential);
-
-// Query parameters with builder
-$params = QueryParamsBuilder::make()
-    ->limit(50)
-    ->active(true)
-    ->tags(['production', 'api'])
-    ->excludePinnedData(true)
-    ->build();
-
-$workflows = N8N::workflows()->list($params);
-```
-
-### Execution Strategies
-
-Choose different execution strategies based on your needs:
-
-#### Synchronous (Default)
-```php
-// Executes immediately and returns result
-$result = N8N::workflows()->list();
-```
-
-#### Asynchronous
-```php
-// Configure async strategy in config/n8n.php
-'default_strategy' => 'async',
-
-// Or use dependency injection
-app()->singleton(\MrKindy\N8NLaravel\Contracts\StrategyInterface::class, function() {
-    return new \MrKindy\N8NLaravel\Services\Strategies\AsyncExecutionStrategy();
-});
-```
-
-#### Queued
-```php
-// Configure queued strategy in config/n8n.php
-'default_strategy' => 'queued',
-
-// Operations will be dispatched to Laravel queues
-$result = N8N::workflows()->list(); // Returns: ['queued' => true, 'message' => '...']
-```
-
-### Observer Pattern
-
-Attach observers to monitor API requests:
-
-```php
-use MrKindy\N8NLaravel\Services\Observers\LoggingObserver;
-use MrKindy\N8NLaravel\Services\Observers\MetricsObserver;
-
-$adapter = app(\MrKindy\N8NLaravel\Contracts\AdapterInterface::class);
-
-// Add logging observer
-$adapter->addObserver(new LoggingObserver('n8n-channel'));
-
-// Add metrics observer
-$metricsObserver = new MetricsObserver();
-$adapter->addObserver($metricsObserver);
-
-// Make requests...
-N8N::workflows()->list();
-
-// Get metrics
-$metrics = $metricsObserver->getMetrics();
-/*
-[
-    'requests_sent' => 1,
-    'responses_received' => 1,
-    'requests_failed' => 0,
-    'total_duration' => 0.250,
-    'average_duration' => 0.250
-]
-*/
-```
-
-### Custom Observers
-
-Create custom observers by implementing the `ObserverInterface`:
-
-```php
-use MrKindy\N8NLaravel\Contracts\ObserverInterface;
-
-class CustomObserver implements ObserverInterface
-{
-    public function onRequestSent(array $requestData): void
-    {
-        // Handle request sent event
-        logger('N8N request sent', $requestData);
-    }
-
-    public function onResponseReceived(array $responseData): void
-    {
-        // Handle response received event
-        if ($responseData['statusCode'] >= 400) {
-            // Alert on errors
-        }
-    }
-
-    public function onRequestFailed(array $errorData): void
-    {
-        // Handle request failed event
-        report($errorData['exception']);
-    }
-}
-
-$adapter->addObserver(new CustomObserver());
-```
-
-### Events
-
-The package dispatches Laravel events for monitoring:
-
-```php
-use MrKindy\N8NLaravel\Events\N8NRequestSent;
-use MrKindy\N8NLaravel\Events\N8NResponseReceived;
-use MrKindy\N8NLaravel\Events\N8NRequestFailed;
-
-// Listen to events in EventServiceProvider
-protected $listen = [
-    N8NRequestSent::class => [
-        'App\Listeners\LogN8NRequest',
-    ],
-    N8NResponseReceived::class => [
-        'App\Listeners\LogN8NResponse',
-    ],
-    N8NRequestFailed::class => [
-        'App\Listeners\AlertN8NFailure',
-    ],
-];
-```
-
-### Error Handling
-
-The package provides structured exception handling:
-
-```php
-use MrKindy\N8NLaravel\Exceptions\N8NApiException;
-use MrKindy\N8NLaravel\Exceptions\N8NConfigurationException;
-
-try {
-    $workflow = N8N::workflows()->get('invalid-id');
-} catch (N8NApiException $e) {
-    $statusCode = $e->statusCode;        // HTTP status code
-    $responseData = $e->responseData;    // API response data
-    $message = $e->getMessage();         // Error message
-} catch (N8NConfigurationException $e) {
-    // Handle configuration errors
-}
-```
+For detailed usage instructions, please refer to [DOCUMENTATION.md](DOCUMENTATION.md).
 
 ## Testing
 
@@ -318,9 +71,9 @@ tests/
 ├── TestCase.php                # Base test case
 ├── Feature/
 │   ├── FacadeTest.php         # Facade functionality tests
-│   ├── BuilderTest.php        # Builder pattern tests
-│   ├── ObserverTest.php       # Observer pattern tests
-│   └── StrategyTest.php       # Strategy pattern tests
+│   ├── BuilderTest.php        # Builder tests
+│   ├── ObserverTest.php       # Observer tests
+│   └── StrategyTest.php       # Strategy tests
 └── Unit/
     ├── AdapterTest.php        # Adapter unit tests
     └── ServiceTest.php        # Individual service tests

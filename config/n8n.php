@@ -47,12 +47,12 @@ return [
     |
     */
     'http' => [
-        'timeout' => env('N8N_HTTP_TIMEOUT', 30),
+        'timeout' => (int) env('N8N_HTTP_TIMEOUT', 30),
         'retry' => [
-            'times' => env('N8N_HTTP_RETRY_TIMES', 3),
-            'sleep' => env('N8N_HTTP_RETRY_SLEEP', 1000),
+            'times' => (int) env('N8N_HTTP_RETRY_TIMES', 3),
+            'sleep' => (int) env('N8N_HTTP_RETRY_SLEEP', 1000),
         ],
-        'verify' => env('N8N_HTTP_VERIFY_SSL', true),
+        'verify' => (bool) env('N8N_HTTP_VERIFY_SSL', true),
     ],
 
     /*

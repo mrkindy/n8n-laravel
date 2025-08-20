@@ -13,10 +13,8 @@ describe('Simple HTTP Test', function () {
 
         try {
             $result = N8N::workflows()->list();
-            dump('Actual result:', $result);
             expect($result)->toHaveKey('message', 'fake response');
         } catch (\Exception $e) {
-            dump('Exception:', $e->getMessage());
             throw $e;
         }
     });

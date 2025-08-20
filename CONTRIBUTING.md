@@ -169,15 +169,15 @@ vendor/bin/pest --filter="can create workflow"
 
 ## Architecture Guidelines
 
-### Design Patterns
+### Features Implemented
 
 When contributing, maintain the established design patterns:
 
-1. **Facade Pattern** - Keep the facade interface simple and intuitive
-2. **Adapter Pattern** - Maintain clean abstraction boundaries
-3. **Strategy Pattern** - Ensure new strategies implement the interface
-4. **Builder Pattern** - Keep builders fluent and chainable
-5. **Observer Pattern** - Maintain event consistency
+1. **Facade** - Keep the facade interface simple and intuitive
+2. **Adapter** - Maintain clean abstraction boundaries
+3. **Strategy** - Ensure new strategies implement the interface
+4. **Builder** - Keep builders fluent and chainable
+5. **Observer** - Maintain event consistency
 
 ### Adding New Features
 

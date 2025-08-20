@@ -5,17 +5,17 @@ All notable changes to the Laravel n8n package will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [released]
 
-## [1.0.0] - 2025-08-18
+## [1.0.0] - 2025-08-20
 
 ### Added
 - Initial release of Laravel n8n package
-- Facade pattern implementation for simple API access
-- Adapter pattern for clean n8n API abstraction
-- Strategy pattern supporting sync, async, and queued execution
-- Builder pattern for constructing complex request payloads
-- Observer pattern for request lifecycle monitoring
+- Facade  implementation for simple API access
+- Adapter  for clean n8n API abstraction
+- Strategy  supporting sync, async, and queued execution
+- Builder  for constructing complex request payloads
+- Observer  for request lifecycle monitoring
 - Complete coverage of n8n Public API v1.1.1
 - Event system integration with Laravel events
 - Comprehensive error handling with custom exceptions
@@ -38,6 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Supported Laravel Versions
 - Laravel 10.x
 - Laravel 11.x
+- Laravel 12.x
 
 ### Requirements
 - PHP 8.1+

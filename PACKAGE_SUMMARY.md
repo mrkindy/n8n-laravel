@@ -64,16 +64,16 @@ n8n-laravel/
 └── n8n-openapi.yml                    # n8n API schema
 ```
 
-## 🎯 Design Patterns Implemented
+## 🎯 Features Implemented
 
-### 1. **Facade Pattern**
+### 1. **Facade**
 ```php
 N8N::workflows()->list();
 N8N::credentials()->create($data);
 N8N::executions()->get($id);
 ```
 
-### 2. **Adapter Pattern**
+### 2. **Adapter**
 ```php
 interface AdapterInterface {
     public function workflows(): WorkflowServiceInterface;
@@ -81,7 +81,7 @@ interface AdapterInterface {
 }
 ```
 
-### 3. **Strategy Pattern**
+### 3. **Strategy**
 ```php
 // Sync execution (default)
 $result = N8N::workflows()->list();
@@ -93,7 +93,7 @@ config(['n8n.default_strategy' => 'async']);
 config(['n8n.default_strategy' => 'queued']);
 ```
 
-### 4. **Builder Pattern**
+### 4. **Builder**
 ```php
 $workflow = WorkflowPayloadBuilder::make()
     ->name('My Workflow')
@@ -104,7 +104,7 @@ $workflow = WorkflowPayloadBuilder::make()
     ->build();
 ```
 
-### 5. **Observer Pattern**
+### 5. **Observer**
 ```php
 $adapter->addObserver(new LoggingObserver());
 $adapter->addObserver(new MetricsObserver());
@@ -225,7 +225,7 @@ vendor/bin/pest tests/Feature/FacadeTest.php
 ## 🔧 Requirements
 
 - PHP 8.1+
-- Laravel 10.0+ or 11.0+
+- Laravel 10.*+, 11.*+ or 12.*+
 - n8n instance with API access
 
 ## 📝 Next Steps

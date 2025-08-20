@@ -9,7 +9,7 @@ Complete documentation for the Laravel n8n integration package.
 - [Architecture Overview](#architecture-overview)
 - [Usage Guide](#usage-guide)
 - [API Reference](#api-reference)
-- [Design Patterns](#design-patterns)
+- [Features Implemented](#features-implemented)
 - [Testing](#testing)
 - [Troubleshooting](#troubleshooting)
 - [Performance](#performance)
@@ -79,12 +79,12 @@ return [
     
     // HTTP client configuration
     'http' => [
-        'timeout' => env('N8N_HTTP_TIMEOUT', 30),
+        'timeout' => (int) env('N8N_HTTP_TIMEOUT', 30),
         'retry' => [
-            'times' => env('N8N_HTTP_RETRY_TIMES', 3),
-            'sleep' => env('N8N_HTTP_RETRY_SLEEP', 1000),
+            'times' => (int) env('N8N_HTTP_RETRY_TIMES', 3),
+            'sleep' => (int) env('N8N_HTTP_RETRY_SLEEP', 1000),
         ],
-        'verify' => env('N8N_HTTP_VERIFY_SSL', true),
+        'verify' => (bool) env('N8N_HTTP_VERIFY_SSL', true),
     ],
     
     // Queue configuration for queued strategy
@@ -396,6 +396,8 @@ $workflows = N8N::workflows()->list(); // Returns actual data
 
 #### Asynchronous Execution
 
+defer the execution of a closure.
+
 ```php
 // Configure in config/n8n.php
 'default_strategy' => 'async',
@@ -403,8 +405,7 @@ $workflows = N8N::workflows()->list(); // Returns actual data
 // Or manually
 app()->singleton(StrategyInterface::class, AsyncExecutionStrategy::class);
 
-$promise = N8N::workflows()->list(); // Returns Promise
-$workflows = $promise->wait(); // Wait for completion
+N8N::workflows()->list();
 ```
 
 #### Queued Execution
@@ -422,7 +423,7 @@ $result = N8N::workflows()->list();
 // The actual API call will be processed by Laravel queue workers
 ```
 
-### Observer Pattern Implementation
+### Observer Implementation
 
 #### Built-in Observers
 
@@ -572,9 +573,9 @@ N8N::audit()->generate(array $options = []): array
 N8N::sourceControl()->pull(array $options = []): array
 ```
 
-## Design Patterns
+## Features Implemented
 
-### Facade Pattern
+### Facade
 
 The facade provides a simple, unified interface:
 
@@ -588,7 +589,7 @@ $workflows = $workflowService->list();
 $workflows = N8N::workflows()->list();
 ```
 
-### Adapter Pattern
+### Adapter
 
 The adapter abstracts HTTP communication:
 
@@ -600,7 +601,7 @@ interface AdapterInterface
 }
 ```
 
-### Strategy Pattern
+### Strategy
 
 Different execution strategies:
 
@@ -615,7 +616,7 @@ interface StrategyInterface
 $strategy->execute(fn() => $httpClient->get('/workflows'));
 ```
 
-### Builder Pattern
+### Builder
 
 Fluent API for complex construction:
 
@@ -627,7 +628,7 @@ $workflow = WorkflowPayloadBuilder::make()
     ->build();
 ```
 
-### Observer Pattern
+### Observer
 
 Event monitoring:
 
@@ -665,10 +666,10 @@ tests/
 ├── Pest.php                    # Pest configuration
 ├── TestCase.php                # Base test case with Laravel setup
 ├── Feature/                    # Integration tests
-│   ├── FacadeTest.php         # Facade pattern tests
-│   ├── BuilderTest.php        # Builder pattern tests
-│   ├── ObserverTest.php       # Observer pattern tests
-│   └── StrategyTest.php       # Strategy pattern tests
+│   ├── FacadeTest.php         # Facade tests
+│   ├── BuilderTest.php        # Builder tests
+│   ├── ObserverTest.php       # Observer tests
+│   └── StrategyTest.php       # Strategy tests
 └── Unit/                      # Unit tests
     ├── AdapterTest.php        # Adapter tests
     └── ServiceTest.php        # Service layer tests

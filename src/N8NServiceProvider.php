@@ -8,6 +8,8 @@ use Illuminate\Support\ServiceProvider;
 use MrKindy\N8NLaravel\Contracts\AdapterInterface;
 use MrKindy\N8NLaravel\Contracts\StrategyInterface;
 use MrKindy\N8NLaravel\Services\N8NAdapter;
+use MrKindy\N8NLaravel\Services\Strategies\AsyncExecutionStrategy;
+use MrKindy\N8NLaravel\Services\Strategies\QueuedExecutionStrategy;
 use MrKindy\N8NLaravel\Services\Strategies\SyncExecutionStrategy;
 
 class N8NServiceProvider extends ServiceProvider
@@ -34,8 +36,8 @@ class N8NServiceProvider extends ServiceProvider
             
             return match ($strategy) {
                 'sync' => $app->make(SyncExecutionStrategy::class),
-                'async' => $app->make(\MrKindy\N8NLaravel\Services\Strategies\AsyncExecutionStrategy::class),
-                'queued' => $app->make(\MrKindy\N8NLaravel\Services\Strategies\QueuedExecutionStrategy::class),
+                'async' => $app->make(AsyncExecutionStrategy::class),
+                'queued' => $app->make(QueuedExecutionStrategy::class),
                 default => $app->make(SyncExecutionStrategy::class),
             };
         });

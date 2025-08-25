@@ -2,11 +2,6 @@
 
 A comprehensive Laravel package for integrating with the n8n API using clean architecture patterns. This package provides a facade-based interface with support for multiple execution strategies, request builders, and event observability.
 
-![Alpha](https://img.shields.io/badge/status-alpha-red?style=for-the-badge)
-
-> ⚠️ **Warning**:  
-> This package is currently in **beta stage**.
-
 ## Features
 
 - **Facade** - Simple static interface (`N8N::workflows()`)
